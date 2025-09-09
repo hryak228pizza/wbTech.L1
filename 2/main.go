@@ -6,10 +6,10 @@ import (
 	_"time"
 )
 
-var example []int
+var example [5]int
 
 func initExample() {
-	example = []int{2, 4, 6, 8, 10}
+	example = [5]int{2, 4, 6, 8, 10}
 }
 
 func square(n int, out chan int, wg *sync.WaitGroup) {
