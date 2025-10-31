@@ -21,8 +21,8 @@ func writer(ctx context.Context, c chan string, wg *sync.WaitGroup) {
         default:
             c <- "."
             time.Sleep(time.Second)
-        }  
-    }
+        }
+    }    
 }
 
 func reader(c chan string, wg *sync.WaitGroup) {
@@ -31,23 +31,21 @@ func reader(c chan string, wg *sync.WaitGroup) {
     for v := range c {
         fmt.Println(v)
     }
-    fmt.Println("reader stop")  
+    fmt.Println("reader stop")
 }
 
 func main() {
 
-    ctx, cancel := context.WithCancel(context.Background())
+    ctx, cancel := context.WithTimeout(context.Background(), lifeTime * time.Second)
+    defer cancel()
 
-    timer := time.NewTimer(lifeTime * time.Second)
     c := make(chan string)
-
     wg := &sync.WaitGroup{}
     wg.Add(2)
-	go writer(ctx, c, wg)
+    go writer(ctx, c, wg)
     go reader(c, wg)
 
-    <-timer.C
-    fmt.Println("timer.C timeout happened")
-    cancel()
+    <-ctx.Done()
+    fmt.Println("timer happened")
     wg.Wait()
 }
